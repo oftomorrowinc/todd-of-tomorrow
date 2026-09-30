@@ -1,0 +1,26 @@
+{
+  "name": "todd-of-tomorrow",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Todd Of Tomorrow - todd.oftomorrow.net",
+  "author": "Todd Sampson",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "typecheck": "astro check",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/rss": "^4.0.12",
+    "@astrojs/tailwind": "^6.0.2",
+    "astro": "^5.13.0",
+    "sharp": "^0.34.2",
+    "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.2"
+  }
+}
