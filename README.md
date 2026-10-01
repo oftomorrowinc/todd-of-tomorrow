@@ -15,3 +15,4 @@ npm test             # Playwright: pages, canonicals, RSS, no third-party script
 
 Posts live in `src/content/blog/`. A post whose canonical home is another site
 goes in `CANONICAL_URLS` in `src/consts.ts`.
+
