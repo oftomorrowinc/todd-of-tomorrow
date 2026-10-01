@@ -14,6 +14,8 @@ const { date, ceiling = false } = Astro.props;
 			year: 'numeric',
 			month: 'short',
 			day: 'numeric',
+			// A bare "2008-01-13" is midnight UTC; read it there or a build west of UTC shows the day before.
+			timeZone: 'UTC',
 		})
 	}
 </time></span>

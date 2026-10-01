@@ -3,10 +3,10 @@ import { LAUNCH_POST_ID } from '../consts';
 
 export type Post = CollectionEntry<'blog'>;
 
-/** Every entry, newest first. */
+/** Every entry, newest first; a shared date (the archive has many) falls back to the id, so prev/next is stable. */
 export async function getPosts(): Promise<Post[]> {
 	return (await getCollection('blog')).sort(
-		(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+		(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf() || a.id.localeCompare(b.id),
 	);
 }
 

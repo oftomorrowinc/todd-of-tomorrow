@@ -21,11 +21,23 @@ const blog = defineCollection({
 			source: z.enum(['wordpress', 'tumblr', 'linkedin']).optional(),
 			// Written now, out of the vault.
 			vault: z.boolean().default(false),
+			// Recovered from the old blog or Tumblr (scripts/import-archive.mjs); canonical here.
+			archive: z.boolean().default(false),
+			// Another site's URL when the piece's canonical home is not here.
+			canonical: z.string().url().optional(),
+			// The export's provenance, kept as it wrote it.
+			dateSource: z.enum(['permalink', 'page', 'capture-ceiling', 'posted']).optional(),
+			originalKey: z.string().optional(),
+			wordCount: z.number().int().nonnegative().optional(),
+			reblogOf: z.string().optional(),
+			tumblrTags: z.string().optional(),
 			// The documents a post stands on; the Evidence box renders only when present.
 			evidence: z
 				.array(z.union([z.string(), z.object({ label: z.string(), href: z.string().optional() })]))
 				.optional(),
-		}),
+		})
+			// A frontmatter field the schema does not name fails the build instead of vanishing.
+			.strict(),
 });
 
 export const collections = { blog };

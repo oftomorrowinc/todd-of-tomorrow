@@ -1,22 +1,8 @@
-import { readdirSync, readFileSync } from 'node:fs';
 import { test, expect, type Page } from '@playwright/test';
 import { emptyRuns, gapSentence, yearCounts } from '../src/lib/years';
+import { posts } from './collection';
 
-const BLOG_DIR = new URL('../src/content/blog/', import.meta.url);
 const CURRENT_YEAR = new Date().getFullYear();
-
-// The collection as the build sees it: id, title, date.
-const posts = readdirSync(BLOG_DIR)
-  .filter((f) => /\.mdx?$/.test(f))
-  .map((file) => {
-    const source = readFileSync(new URL(file, BLOG_DIR), 'utf8');
-    return {
-      id: file.replace(/\.mdx?$/, ''),
-      title: source.match(/^title: '(.*)'$/m)![1].replace(/''/g, "'"),
-      date: new Date(source.match(/^pubDate: '(.*)'$/m)![1]),
-      vault: /^vault: true$/m.test(source),
-    };
-  });
 const counts = yearCounts(posts.map((p) => p.date), CURRENT_YEAR);
 
 // The record as it will be after the archive import: 2008–2017, nine quiet years, then now.
@@ -58,6 +44,15 @@ test.describe('year arithmetic', () => {
 });
 
 const PAGES = ['/', '/archive', '/about', ...posts.map((p) => `/blog/${p.id}/`)];
+// The two posts written here and one of each kind the archive brings: they share one layout.
+const SAMPLE = [
+  '/',
+  '/archive',
+  '/about',
+  ...posts
+    .filter((p, i, all) => !p.archive || all.findIndex((q) => q.source === p.source && q.note === p.note) === i)
+    .map((p) => `/blog/${p.id}/`),
+];
 
 test('every page renders and every internal chrome link resolves', async ({ page, request }) => {
   const hrefs = new Set<string>();
@@ -111,7 +106,7 @@ test('the archive draws each run of empty years from the data', async ({ page })
   for (const [i, run] of [...runs].reverse().entries()) {
     const label = run.from === run.to ? `${run.from}` : `${run.from}–${run.to}`;
     await expect(blocks.nth(i).locator('.gap')).toHaveText(`${label} · nothing published`);
-    const later = posts.filter((p) => p.date.getFullYear() > run.to).sort((a, b) => +a.date - +b.date);
+    const later = posts.filter((p) => p.date.getUTCFullYear() > run.to).reverse();
     const after = later.find((p) => p.vault) ?? later[0];
     await expect(blocks.nth(i).locator('a')).toHaveAttribute('href', `/blog/${after.id}/`);
     await expect(blocks.nth(i).locator('a')).toHaveText(`${after.title} →`);
@@ -153,13 +148,17 @@ test('posts: meta line, one badge, standfirst, indigo quote rule, prev/next', as
     'rgb(67, 56, 202)',
   ]);
   await expect(page.locator('.evidence')).toHaveCount(0);
-  await expect(page.locator('a[rel="prev"]')).toHaveAttribute('href', '/blog/byollm-is-open-source/');
+  const at = (id: string) => posts.findIndex((p) => p.id === id);
+  await expect(page.locator('a[rel="prev"]')).toHaveAttribute(
+    'href',
+    `/blog/${posts[at('the-rule-i-wrote-and-then-broke') + 1].id}/`,
+  );
 
   await page.goto('/blog/byollm-is-open-source/');
   await expect(page.locator('.post .badge')).toHaveText('Launch');
   await expect(page.locator('a[rel="next"]')).toHaveAttribute(
     'href',
-    '/blog/the-rule-i-wrote-and-then-broke/',
+    `/blog/${posts[at('byollm-is-open-source') - 1].id}/`,
   );
 });
 
@@ -169,7 +168,7 @@ test('home: the two newest posts as cards, under the headline', async ({ page })
   await expect(page.locator('.hero .lede')).toHaveText(
     "Real dates, real work, including the parts that didn't work. Posts out of the vault, and what's being built now.",
   );
-  const newest = [...posts].sort((a, b) => +b.date - +a.date).slice(0, 2);
+  const newest = posts.filter((p) => !p.note).slice(0, 2);
   await expect(page.locator('.card h3')).toHaveText(newest.map((p) => p.title));
   await expect(page.locator('.card .read').first()).toHaveText('Read it →');
 });
@@ -238,7 +237,7 @@ async function textColors(page: Page, selector: string) {
 }
 
 test('meta grey and labels hold 4.5:1 on every ground', async ({ page }) => {
-  for (const path of PAGES) {
+  for (const path of SAMPLE) {
     await page.goto(path);
     // Every label-face element (the condensed face makes thin strokes; the colors must carry it). The
     // ember "now" year label is the brief's one exception and is reported, not asserted.

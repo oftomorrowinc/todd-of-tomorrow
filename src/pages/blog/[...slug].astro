@@ -22,6 +22,6 @@ const { post, newer, older } = Astro.props;
 const { Content } = await render(post);
 ---
 
-<BlogPost post={post} newer={newer} older={older} canonical={CANONICAL_URLS[post.id]}>
+<BlogPost post={post} newer={newer} older={older} canonical={post.data.canonical ?? CANONICAL_URLS[post.id]}>
 	<Content />
 </BlogPost>

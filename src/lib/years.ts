@@ -14,7 +14,8 @@ export interface EmptyRun {
 /** One entry per year from the first post's year through `currentYear`, zero-count years included. */
 export function yearCounts(dates: Date[], currentYear: number): YearCount[] {
 	const counts = new Map<number, number>();
-	for (const date of dates) counts.set(date.getFullYear(), (counts.get(date.getFullYear()) ?? 0) + 1);
+	// UTC, as FormattedDate reads it: a bare "2008-01-01" is midnight UTC, which is 2007 west of it.
+	for (const date of dates) counts.set(date.getUTCFullYear(), (counts.get(date.getUTCFullYear()) ?? 0) + 1);
 	const years = [...counts.keys()];
 	const first = Math.min(currentYear, ...years);
 	const last = Math.max(currentYear, ...years);

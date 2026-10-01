@@ -1,0 +1,17 @@
+---
+title: "Some Grimlock wisdom:"
+description: "\"SMART PERSON EVENTUALLY FIND SOMETHING THAT WORK."
+pubDate: "2013-05-20"
+source: "tumblr"
+dateIsCeiling: true
+dateSource: "capture-ceiling"
+originalKey: "tb:45993983071"
+wordCount: 53
+archive: true
+---
+
+"SMART PERSON EVENTUALLY FIND SOMETHING THAT WORK. ONCE FIND, IT KIND OF BORING. LOTS OF SMART PEOPLE FIND WAY TO WIN, THROW IT AWAY FOR EXCITING NEW WAY TO LOSE.
+
+STUPID PERSON NEVER GET BORED WITH WINNING. PULL LEVER MAKE MONEY? THEM PULL THAT LEVER FOREVER.
+
+Fake Grimlock: Win Like Stupid – ReadWrite

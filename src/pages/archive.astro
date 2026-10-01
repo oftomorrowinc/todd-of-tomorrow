@@ -21,13 +21,13 @@ const runs = emptyRuns(counts);
 const blocks: Block[] = [];
 for (const { year, count } of [...counts].reverse()) {
 	if (count > 0) {
-		blocks.push({ kind: 'year', year, posts: posts.filter((p) => p.data.pubDate.getFullYear() === year) });
+		blocks.push({ kind: 'year', year, posts: posts.filter((p) => p.data.pubDate.getUTCFullYear() === year) });
 		continue;
 	}
 	const run = runs.find((r) => r.to === year);
 	if (!run) continue;
 	// The post that breaks the quiet: the first one out of the vault after it (Post 1), else the first after it.
-	const later = posts.filter((p) => p.data.pubDate.getFullYear() > run.to);
+	const later = posts.filter((p) => p.data.pubDate.getUTCFullYear() > run.to);
 	const after = later.findLast((p) => p.data.vault) ?? later.at(-1);
 	blocks.push({ kind: 'empty', from: run.from, to: run.to, after });
 }

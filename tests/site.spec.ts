@@ -1,31 +1,23 @@
-import { readdirSync, readFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
+import { posts } from './collection';
 
 const SITE = 'https://todd.oftomorrow.net';
-const BLOG_DIR = new URL('../src/content/blog/', import.meta.url);
 
-// Every file in the content collection, with the title from its frontmatter.
-const posts = readdirSync(BLOG_DIR)
-  .filter((f) => /\.mdx?$/.test(f))
-  .map((file) => {
-    const source = readFileSync(new URL(file, BLOG_DIR), 'utf8');
-    const title = source.match(/^title: '(.*)'$/m)?.[1].replace(/''/g, "'");
-    return { id: file.replace(/\.mdx?$/, ''), title };
-  });
-
-test('the content collection has both posts', () => {
-  expect(posts.map((p) => p.id).sort()).toEqual([
+test('the content collection is the two posts written here plus the 211-file archive', () => {
+  expect(posts).toHaveLength(213);
+  expect(posts.filter((p) => !p.archive).map((p) => p.id).sort()).toEqual([
     'byollm-is-open-source',
     'the-rule-i-wrote-and-then-broke',
   ]);
+  expect(posts.filter((p) => p.archive)).toHaveLength(211);
 });
 
-test('home is the blog index with the masthead and every post', async ({ page }) => {
+test('home is the blog index with the masthead and the latest posts', async ({ page }) => {
   await page.goto('/');
   await expect(page).toHaveTitle('Todd Of Tomorrow');
   await expect(page.locator('header .wordmark')).toHaveText('Todd Of Tomorrow');
-  for (const post of posts) {
-    await expect(page.locator(`a[href="/blog/${post.id}/"]`).first()).toContainText(post.title!);
+  for (const post of posts.filter((p) => !p.note).slice(0, 2)) {
+    await expect(page.locator(`a[href="/blog/${post.id}/"]`).first()).toContainText(post.title);
   }
 });
 
@@ -33,7 +25,7 @@ for (const post of posts) {
   test(`post ${post.id} has a page`, async ({ page }) => {
     const response = await page.goto(`/blog/${post.id}/`);
     expect(response?.status()).toBe(200);
-    await expect(page.locator('h1')).toHaveText(post.title!);
+    await expect(page.locator('h1')).toHaveText(post.title);
   });
 }
 
@@ -68,12 +60,18 @@ test('no third-party scripts', async ({ page }) => {
     const url = new URL(req.url());
     if (req.resourceType() === 'script' && url.hostname !== 'localhost') thirdParty.push(req.url());
   });
-  for (const path of ['/', '/about', '/archive', ...posts.map((p) => `/blog/${p.id}/`)]) {
+  // The two posts written here and one of each kind the archive brings; they share one layout.
+  const sample = posts.filter(
+    (p, i, all) => !p.archive || all.findIndex((q) => q.source === p.source && q.note === p.note) === i,
+  );
+  for (const path of ['/', '/about', '/archive', ...sample.map((p) => `/blog/${p.id}/`)]) {
     await page.goto(path, { waitUntil: 'networkidle' });
   }
   expect(thirdParty).toEqual([]);
 });
 
+// Every post, archive included: the items carry title, description and link only, so 213 of them is
+// a small feed, and a reader that subscribes gets the whole record rather than the latest slice of it.
 test('RSS is well-formed RSS 2.0 with one item per post', async ({ page, request }) => {
   const response = await request.get('/rss.xml');
   expect(response.status()).toBe(200);
