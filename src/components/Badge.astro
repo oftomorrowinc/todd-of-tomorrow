@@ -1,0 +1,11 @@
+---
+import { badgeFor, type Post } from '../lib/posts';
+
+interface Props {
+	post: Post;
+}
+
+const badge = badgeFor(Astro.props.post);
+---
+
+{badge && <span class:list={['badge', `badge-${badge.tone}`]}>{badge.text}</span>}

@@ -1,12 +1,14 @@
 ---
 interface Props {
 	date: Date;
+	// "by <date>": the date is a ceiling, not the day it went up.
+	ceiling?: boolean;
 }
 
-const { date } = Astro.props;
+const { date, ceiling = false } = Astro.props;
 ---
 
-<time datetime={date.toISOString()}>
+<span>{ceiling && 'by '}<time datetime={date.toISOString()}>
 	{
 		date.toLocaleDateString('en-us', {
 			year: 'numeric',
@@ -14,4 +16,4 @@ const { date } = Astro.props;
 			day: 'numeric',
 		})
 	}
-</time>
+</time></span>

@@ -1,14 +1,32 @@
 ---
-import Layout from '../layouts/BlogPost.astro';
+import AboutText from '../components/AboutText.astro';
 import { SITE_DESCRIPTION } from '../consts';
+import Base from '../layouts/Base.astro';
 ---
 
-<Layout title="About" description={SITE_DESCRIPTION}>
-	<!-- Todd's words: a paragraph of his LinkedIn About as pasted 09-25 (todds-vault derived/posts-2026-09-launch.md §E). -->
-	<p>
-		What I believe right now: the future does not arrive in your feed. It gets built, mostly out of
-		small things, by people who start. Software is heading the same way – small, single-purpose
-		tools, well connected, running on the compute you already own instead of on somebody else's
-		meter.
-	</p>
-</Layout>
+<Base title="About" description={SITE_DESCRIPTION}>
+	<article class="column page">
+		<h1>About</h1>
+		<div class="prose"><AboutText /></div>
+	</article>
+</Base>
+
+<style>
+	.page {
+		padding-top: 64px;
+	}
+	h1 {
+		margin: 0 0 28px;
+		font-size: 46px;
+		font-weight: 600;
+		line-height: 1.12;
+	}
+	@media (max-width: 640px) {
+		.page {
+			padding-top: 40px;
+		}
+		h1 {
+			font-size: 34px;
+		}
+	}
+</style>

@@ -1,0 +1,99 @@
+---
+import type { YearCount } from '../lib/years';
+
+interface Props {
+	counts: YearCount[];
+	currentYear: number;
+}
+
+const { counts, currentYear } = Astro.props;
+const max = Math.max(1, ...counts.map((c) => c.count));
+---
+
+<ol class="strip" style={`--years: ${counts.length}`}>
+	{
+		counts.map(({ year, count }) => (
+			<li
+				class:list={{ empty: count === 0, now: year === currentYear }}
+				data-year={year}
+				data-count={count}
+			>
+				<a href={`/archive#y${year}`}>
+					<span class="track">
+						<span class="bar" style={count > 0 ? `height: ${(count / max) * 100}%` : undefined} />
+					</span>
+					<span class="year" aria-hidden="true">{String(year).slice(-2)}</span>
+					<span class="sr-only">
+						{year}: {count} {count === 1 ? 'post' : 'posts'}
+					</span>
+				</a>
+			</li>
+		))
+	}
+</ol>
+<style>
+	.strip {
+		display: grid;
+		grid-template-columns: repeat(var(--years), minmax(0, 1fr));
+		gap: 6px;
+		max-width: calc(var(--years) * 52px);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	a {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		text-decoration: none;
+	}
+	.track {
+		display: flex;
+		align-items: flex-end;
+		height: 120px;
+	}
+	.bar {
+		display: block;
+		width: 100%;
+		min-height: 4px;
+		background: var(--indigo);
+	}
+	.empty .bar {
+		height: 4px;
+		background: none;
+		border: 1px dashed var(--empty-year);
+		box-sizing: border-box;
+	}
+	.now .bar {
+		background: var(--ember);
+	}
+	.now.empty .bar {
+		background: none;
+		border-color: var(--ember);
+	}
+	.year {
+		margin-top: 8px;
+		color: var(--meta);
+		font-family: var(--font-sans);
+		font-size: 13px;
+		font-weight: 500;
+		text-align: center;
+		white-space: nowrap;
+	}
+	.now .year {
+		color: var(--ember);
+		font-weight: 700;
+	}
+	@media (max-width: 640px) {
+		.strip {
+			gap: 3px;
+		}
+		.year {
+			font-size: 10px;
+			letter-spacing: -0.02em;
+		}
+	}
+	a:hover .bar {
+		opacity: 0.8;
+	}
+</style>

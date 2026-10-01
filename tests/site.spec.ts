@@ -23,9 +23,9 @@ test('the content collection has both posts', () => {
 test('home is the blog index with the masthead and every post', async ({ page }) => {
   await page.goto('/');
   await expect(page).toHaveTitle('Todd Of Tomorrow');
-  await expect(page.locator('header h2')).toHaveText('Todd Of Tomorrow');
+  await expect(page.locator('header .wordmark')).toHaveText('Todd Of Tomorrow');
   for (const post of posts) {
-    await expect(page.locator(`a[href="/blog/${post.id}/"]`)).toContainText(post.title!);
+    await expect(page.locator(`a[href="/blog/${post.id}/"]`).first()).toContainText(post.title!);
   }
 });
 
@@ -68,7 +68,7 @@ test('no third-party scripts', async ({ page }) => {
     const url = new URL(req.url());
     if (req.resourceType() === 'script' && url.hostname !== 'localhost') thirdParty.push(req.url());
   });
-  for (const path of ['/', '/about', ...posts.map((p) => `/blog/${p.id}/`)]) {
+  for (const path of ['/', '/about', '/archive', ...posts.map((p) => `/blog/${p.id}/`)]) {
     await page.goto(path, { waitUntil: 'networkidle' });
   }
   expect(thirdParty).toEqual([]);

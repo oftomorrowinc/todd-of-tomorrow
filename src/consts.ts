@@ -11,3 +11,6 @@ export const SITE_DESCRIPTION =
 export const CANONICAL_URLS: Record<string, string> = {
 	'byollm-is-open-source': 'https://oftomorrow.net/blog/byollm-is-open-source/',
 };
+
+// The launch post, which carries the "Launch" badge.
+export const LAUNCH_POST_ID = 'byollm-is-open-source';

@@ -8,8 +8,11 @@ export async function GET(context) {
 		title: SITE_TITLE,
 		description: SITE_DESCRIPTION,
 		site: context.site,
+		// Named fields, not a spread: frontmatter like `source` collides with RSS's own item fields.
 		items: posts.map((post) => ({
-			...post.data,
+			title: post.data.title,
+			description: post.data.description,
+			pubDate: post.data.pubDate,
 			link: `/blog/${post.id}/`,
 		})),
 	});

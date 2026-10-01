@@ -1,90 +1,156 @@
 ---
-import { Image } from 'astro:assets';
-import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
+import Badge from '../components/Badge.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
+import { badgeFor, type Post, readTime } from '../lib/posts';
+import Base from './Base.astro';
 
-// pubDate is optional so the About page can use this layout without inventing a date.
-type Props = Omit<CollectionEntry<'blog'>['data'], 'pubDate'> & {
-	pubDate?: Date;
+interface Props {
+	post: Post;
+	newer?: Post;
+	older?: Post;
 	canonical?: string;
-};
+}
 
-const { title, description, pubDate, updatedDate, heroImage, canonical } = Astro.props;
+const { post, newer, older, canonical } = Astro.props;
+const { title, description, pubDate, dateIsCeiling, updatedDate, evidence } = post.data;
 ---
 
-<html lang="en">
-	<head>
-		<BaseHead title={title} description={description} canonical={canonical} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
+<Base title={title} description={description} canonical={canonical}>
+	<article class="column post">
+		<p class="meta line">
+			<FormattedDate date={pubDate} ceiling={dateIsCeiling} />
+			<span aria-hidden="true">·</span>
+			{
+				badgeFor(post) && (
+					<>
+						<Badge post={post} />
+						<span aria-hidden="true">·</span>
+					</>
+				)
 			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
-	</head>
-
-	<body>
-		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							{pubDate && <FormattedDate date={pubDate} />}
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
+			<span>{readTime(post)}</span>
+		</p>
+		<h1>{title}</h1>
+		{
+			updatedDate && (
+				<p class="meta updated">
+					Last updated on <FormattedDate date={updatedDate} />
+				</p>
+			)
+		}
+		<div class="prose">
+			<slot />
+		</div>
+		{
+			evidence && evidence.length > 0 && (
+				<aside class="evidence" aria-labelledby="evidence">
+					<h2 class="label" id="evidence">Evidence</h2>
+					<ul>
+						{evidence.map((item) =>
+							typeof item === 'string' ? (
+								<li>{item}</li>
+							) : (
+								<li>{item.href ? <a href={item.href}>{item.label}</a> : item.label}</li>
+							),
+						)}
+					</ul>
+				</aside>
+			)
+		}
+		{
+			(older || newer) && (
+				<nav class="pager" aria-label="More posts">
+					<div>
+						{older && (
+							<a href={`/blog/${older.id}/`} rel="prev">
+								<span class="meta">← Previous</span>
+								<span class="title">{older.data.title}</span>
+							</a>
+						)}
 					</div>
-					<slot />
-				</div>
-			</article>
-		</main>
-		<Footer />
-	</body>
-</html>
+					<div class="next">
+						{newer && (
+							<a href={`/blog/${newer.id}/`} rel="next">
+								<span class="meta">Next →</span>
+								<span class="title">{newer.data.title}</span>
+							</a>
+						)}
+					</div>
+				</nav>
+			)
+		}
+	</article>
+</Base>
+
+<style>
+	.post {
+		padding-top: 64px;
+	}
+	.line {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px 10px;
+		margin: 0 0 16px;
+	}
+	h1 {
+		margin: 0 0 32px;
+		font-size: 46px;
+		font-weight: 600;
+		line-height: 1.12;
+		letter-spacing: -0.01em;
+	}
+	.updated {
+		margin: -20px 0 28px;
+	}
+	.evidence {
+		margin: 40px 0 0;
+		padding: 24px 28px;
+		border: 1px solid var(--rule);
+		border-radius: 6px;
+		background: var(--section-ground);
+	}
+	.evidence .label {
+		margin-bottom: 12px;
+	}
+	.evidence ul {
+		margin: 0;
+		padding-left: 1.1em;
+		font-size: 17px;
+		line-height: 1.55;
+	}
+	.pager {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 24px;
+		margin-top: 56px;
+		padding-top: 24px;
+		border-top: 1px solid var(--rule);
+	}
+	.pager a {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		text-decoration: none;
+	}
+	.pager .title {
+		color: var(--ink);
+		font-size: 19px;
+		font-weight: 600;
+		line-height: 1.3;
+	}
+	.pager a:hover .title {
+		color: var(--indigo);
+	}
+	.next {
+		text-align: right;
+	}
+	@media (max-width: 640px) {
+		.post {
+			padding-top: 40px;
+		}
+		h1 {
+			font-size: 34px;
+		}
+	}
+</style>

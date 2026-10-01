@@ -1,0 +1,63 @@
+---
+import type { Post } from '../lib/posts';
+import Badge from './Badge.astro';
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+	post: Post;
+}
+
+const { post } = Astro.props;
+const href = `/blog/${post.id}/`;
+---
+
+<article class="card">
+	<p class="meta line">
+		<FormattedDate date={post.data.pubDate} ceiling={post.data.dateIsCeiling} />
+		<Badge post={post} />
+	</p>
+	<h3><a href={href}>{post.data.title}</a></h3>
+	<p class="description">{post.data.description}</p>
+	<a class="read" href={href} aria-hidden="true" tabindex="-1">Read it →</a>
+</article>
+<style>
+	.card {
+		display: flex;
+		flex-direction: column;
+		padding-top: 20px;
+		border-top: 1px solid var(--rule);
+	}
+	.line {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 10px;
+		margin: 0 0 12px;
+	}
+	h3 {
+		margin: 0 0 12px;
+		font-size: 28px;
+		font-weight: 600;
+		line-height: 1.2;
+	}
+	h3 a {
+		color: var(--ink);
+		text-decoration: none;
+	}
+	h3 a:hover {
+		color: var(--indigo);
+	}
+	.description {
+		margin: 0 0 16px;
+		color: var(--body-muted);
+		font-size: 18px;
+		line-height: 1.55;
+	}
+	.read {
+		margin-top: auto;
+		font-family: var(--font-sans);
+		font-size: 14px;
+		font-weight: 700;
+		text-decoration: none;
+	}
+</style>

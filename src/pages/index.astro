@@ -1,114 +1,137 @@
 ---
-import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
+import AboutText from '../components/AboutText.astro';
+import PostCard from '../components/PostCard.astro';
+import YearStrip from '../components/YearStrip.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import Base from '../layouts/Base.astro';
+import { getPosts } from '../lib/posts';
+import { gapSentence, yearCounts } from '../lib/years';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+const posts = await getPosts();
+const latest = posts.filter((post) => post.data.kind !== 'note').slice(0, 2);
+const currentYear = new Date().getFullYear();
+const counts = yearCounts(
+	posts.map((post) => post.data.pubDate),
+	currentYear,
 );
+const sentence = gapSentence(counts);
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 960px;
-			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))
-					}
-				</ul>
-			</section>
-		</main>
-		<Footer />
-	</body>
-</html>
+<Base title={SITE_TITLE} description={SITE_DESCRIPTION}>
+	<section class="container hero">
+		<p class="eyebrow">Founder, Of Tomorrow · building in public</p>
+		<h1>{SITE_DESCRIPTION}</h1>
+	</section>
+
+	<section class="container section" aria-labelledby="latest">
+		<h2 class="label" id="latest">Latest</h2>
+		<div class="cards">
+			{latest.map((post) => <PostCard post={post} />)}
+		</div>
+	</section>
+
+	<section class="band" aria-labelledby="by-year">
+		<div class="container">
+			<h2 class="label" id="by-year">The archive, by year</h2>
+			<YearStrip counts={counts} currentYear={currentYear} />
+			{sentence && <p class="sentence">{sentence}</p>}
+		</div>
+	</section>
+
+	<section class="container section split">
+		<div>
+			<h2 class="label" id="about">About</h2>
+			<div class="about"><AboutText /></div>
+		</div>
+		<div>
+			<h2 class="label" id="building-now">Building now</h2>
+			<ul class="building">
+				<li><a href="https://byo-llm.com">byo-llm.com</a></li>
+				<li><a href="https://oftomorrow.net">oftomorrow.net</a></li>
+				<li><a href="https://github.com/oftomorrowinc">github.com/oftomorrowinc</a></li>
+			</ul>
+		</div>
+	</section>
+</Base>
+
+<style>
+	.hero {
+		padding-top: 72px;
+		padding-bottom: 56px;
+	}
+	.eyebrow {
+		margin: 0 0 16px;
+		color: var(--indigo);
+		font-family: var(--font-sans);
+		font-size: 14px;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+	h1 {
+		max-width: 22em;
+		margin: 0;
+		font-size: 44px;
+		font-weight: 400;
+		line-height: 1.2;
+	}
+	.section {
+		padding-top: 24px;
+		padding-bottom: 56px;
+	}
+	.cards {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 40px;
+	}
+	.band {
+		padding: 48px 0;
+		background: var(--section-ground);
+		margin-bottom: 56px;
+	}
+	.sentence {
+		margin: 24px 0 0;
+		color: var(--body-muted);
+		font-size: 18px;
+	}
+	.split {
+		display: grid;
+		grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+		gap: 56px;
+	}
+	.about :global(p) {
+		margin: 0;
+		color: var(--ink);
+	}
+	.building {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-family: var(--font-sans);
+		font-size: 16px;
+		font-weight: 500;
+		line-height: 2;
+	}
+	.building a {
+		text-decoration: none;
+	}
+	.building a:hover {
+		text-decoration: underline;
+	}
+	@media (max-width: 640px) {
+		.hero {
+			padding-top: 40px;
+			padding-bottom: 32px;
+		}
+		h1 {
+			font-size: 30px;
+		}
+		.cards,
+		.split {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.split {
+			gap: 32px;
+		}
+	}
+</style>

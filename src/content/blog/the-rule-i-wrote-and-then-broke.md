@@ -2,6 +2,7 @@
 title: 'The rule I wrote and then broke'
 description: 'From the vault: in January 2023 I wrote down eight rules for the year. Number five was "a project isn''t done until it is shared with the world." Then I started 118 repositories and shipped almost none of them.'
 pubDate: 'Sep 30 2026'
+vault: true
 ---
 
 *From the vault. Written now, about 2023.*

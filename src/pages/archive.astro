@@ -1,0 +1,208 @@
+---
+import Badge from '../components/Badge.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import { SITE_DESCRIPTION } from '../consts';
+import Base from '../layouts/Base.astro';
+import { getPosts, type Post } from '../lib/posts';
+import { emptyRuns, yearCounts } from '../lib/years';
+
+const posts = await getPosts();
+const currentYear = new Date().getFullYear();
+const counts = yearCounts(
+	posts.map((post) => post.data.pubDate),
+	currentYear,
+);
+
+// Newest first: one block per year with posts, and one dashed block per run of empty years.
+type Block =
+	| { kind: 'year'; year: number; posts: Post[] }
+	| { kind: 'empty'; from: number; to: number; after?: Post };
+const runs = emptyRuns(counts);
+const blocks: Block[] = [];
+for (const { year, count } of [...counts].reverse()) {
+	if (count > 0) {
+		blocks.push({ kind: 'year', year, posts: posts.filter((p) => p.data.pubDate.getFullYear() === year) });
+		continue;
+	}
+	const run = runs.find((r) => r.to === year);
+	if (!run) continue;
+	// The post that breaks the quiet: the first one out of the vault after it (Post 1), else the first after it.
+	const later = posts.filter((p) => p.data.pubDate.getFullYear() > run.to);
+	const after = later.findLast((p) => p.data.vault) ?? later.at(-1);
+	blocks.push({ kind: 'empty', from: run.from, to: run.to, after });
+}
+const pillYears = counts
+	.filter((c) => c.count > 0 || c.year === currentYear)
+	.map((c) => c.year)
+	.reverse();
+const range = (from: number, to: number) => (from === to ? `${from}` : `${from}–${to}`);
+---
+
+<Base title="Archive" description={SITE_DESCRIPTION}>
+	<div class="container page">
+		<h1 class="label">Archive</h1>
+		<nav class="pills" aria-label="Years">
+			{
+				pillYears.map((year) => (
+					<a href={`#y${year}`} class:list={{ current: year === currentYear }}>
+						{year}
+					</a>
+				))
+			}
+		</nav>
+
+		{
+			blocks.map((block) =>
+				block.kind === 'year' ? (
+					<section class="block" id={`y${block.year}`} aria-labelledby={`h${block.year}`}>
+						<div class="side">
+							<h2 id={`h${block.year}`}>{block.year}</h2>
+							<p class="meta">
+								{block.posts.length} {block.posts.length === 1 ? 'post' : 'posts'}
+							</p>
+						</div>
+						<ol class="rows">
+							{block.posts.map((post) => (
+								<li class:list={['row', { note: post.data.kind === 'note' }]}>
+									<span class="meta date">
+										<FormattedDate date={post.data.pubDate} ceiling={post.data.dateIsCeiling} />
+									</span>
+									<a href={`/blog/${post.id}/`}>{post.data.title}</a>
+									{post.data.kind === 'note' ? <span class="badge badge-grey">note</span> : <Badge post={post} />}
+								</li>
+							))}
+						</ol>
+					</section>
+				) : (
+					<section class="block empty" data-from={block.from} data-to={block.to}>
+						<p class="gap">{range(block.from, block.to)} · nothing published</p>
+						{block.after && (
+							<a class="after" href={`/blog/${block.after.id}/`}>
+								{block.after.data.title} →
+							</a>
+						)}
+					</section>
+				),
+			)
+		}
+	</div>
+</Base>
+
+<style>
+	.page {
+		padding-top: 64px;
+	}
+	h1.label {
+		font-size: 14px;
+		margin-bottom: 16px;
+	}
+	.pills {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-bottom: 48px;
+	}
+	.pills a {
+		padding: 6px 14px;
+		border: 1px solid var(--rule);
+		border-radius: 999px;
+		color: var(--ink);
+		font-family: var(--font-sans);
+		font-size: 14px;
+		font-weight: 500;
+		text-decoration: none;
+	}
+	.pills a:hover {
+		border-color: var(--indigo);
+		color: var(--indigo);
+	}
+	.pills a.current {
+		background: var(--ink);
+		border-color: var(--ink);
+		color: var(--ground);
+	}
+	.block {
+		display: grid;
+		grid-template-columns: 160px minmax(0, 1fr);
+		gap: 24px;
+		padding: 28px 0;
+		border-top: 1px solid var(--rule);
+		scroll-margin-top: 24px;
+	}
+	.side h2 {
+		margin: 0;
+		font-family: var(--font-sans);
+		font-size: 28px;
+		font-weight: 700;
+		line-height: 1.1;
+	}
+	.side .meta {
+		margin: 4px 0 0;
+	}
+	.rows {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 4px 16px;
+		padding: 6px 0;
+	}
+	.row .date {
+		flex: 0 0 110px;
+	}
+	.row a {
+		color: var(--ink);
+		font-size: 20px;
+		line-height: 1.4;
+		text-decoration: none;
+	}
+	.row a:hover {
+		color: var(--indigo);
+	}
+	.row.note a {
+		color: var(--body-muted);
+		font-size: 17px;
+	}
+	.row.note {
+		padding: 3px 0;
+	}
+	.empty {
+		display: block;
+		margin: 16px 0;
+		padding: 24px 28px;
+		border: 1px dashed var(--empty-year);
+		border-radius: 6px;
+	}
+	.gap {
+		margin: 0 0 8px;
+		color: var(--body-muted);
+		font-family: var(--font-sans);
+		font-size: 16px;
+		font-weight: 700;
+	}
+	.after {
+		font-family: var(--font-sans);
+		font-size: 14px;
+		font-weight: 500;
+		text-decoration: none;
+	}
+	.after:hover {
+		text-decoration: underline;
+	}
+	@media (max-width: 640px) {
+		.page {
+			padding-top: 40px;
+		}
+		.block {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 12px;
+		}
+		.row .date {
+			flex-basis: 100%;
+		}
+	}
+</style>
