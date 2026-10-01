@@ -36,6 +36,9 @@ const pillYears = counts
 	.map((c) => c.year)
 	.reverse();
 const range = (from: number, to: number) => (from === to ? `${from}` : `${from}â€“${to}`);
+// The block's opening word counts the run, so a backfilled post shrinks the copy with the block.
+const WORDS = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve'];
+const yearsWord = (n: number) => `${WORDS[n] ?? n} ${n === 1 ? 'year' : 'years'}`;
 ---
 
 <Base title="Archive" description={SITE_DESCRIPTION}>
@@ -76,6 +79,12 @@ const range = (from: number, to: number) => (from === to ? `${from}` : `${from}â
 				) : (
 					<section class="block empty" data-from={block.from} data-to={block.to}>
 						<p class="gap">{range(block.from, block.to)} Â· nothing published</p>
+						{block.after?.data.vault && (
+							<p class="quiet">
+								{yearsWord(block.to - block.from + 1)} with nothing published here. Not nothing built - a 3D-printer
+								company, a decade of robotics, a game studio, a writing system, and a protocol. Just nothing said.
+							</p>
+						)}
 						{block.after && (
 							<a class="after" href={`/blog/${block.after.id}/`}>
 								{block.after.data.title} â†’
@@ -108,8 +117,9 @@ const range = (from: number, to: number) => (from === to ? `${from}` : `${from}â
 		border-radius: 999px;
 		color: var(--ink);
 		font-family: var(--font-sans);
-		font-size: 14px;
-		font-weight: 500;
+		font-size: 15px;
+		font-weight: 700;
+		letter-spacing: 0.08em;
 		text-decoration: none;
 	}
 	.pills a:hover {
@@ -132,9 +142,9 @@ const range = (from: number, to: number) => (from === to ? `${from}` : `${from}â
 	.side h2 {
 		margin: 0;
 		font-family: var(--font-sans);
-		font-size: 28px;
-		font-weight: 700;
-		line-height: 1.1;
+		font-size: 36px;
+		font-weight: 900;
+		line-height: 1;
 	}
 	.side .meta {
 		margin: 4px 0 0;
@@ -181,13 +191,24 @@ const range = (from: number, to: number) => (from === to ? `${from}` : `${from}â
 		margin: 0 0 8px;
 		color: var(--body-muted);
 		font-family: var(--font-sans);
-		font-size: 16px;
+		font-size: 17px;
 		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+	.quiet {
+		max-width: 36em;
+		margin: 0 0 12px;
+		color: var(--body-muted);
+		font-size: 18px;
+		line-height: 1.55;
 	}
 	.after {
 		font-family: var(--font-sans);
-		font-size: 14px;
-		font-weight: 500;
+		font-size: 15px;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
 		text-decoration: none;
 	}
 	.after:hover {

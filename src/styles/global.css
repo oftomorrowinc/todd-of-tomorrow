@@ -18,7 +18,8 @@
 	--badge-grey-fg: #4b4960;
 	--empty-year: #b9b6cc;
 
-	--font-sans: 'Space Grotesk', system-ui, sans-serif;
+	/* The label face, shared with oftomorrow.net: 900 for the wordmark, 700 caps for labels. */
+	--font-sans: 'Big Shoulders Display', 'Arial Narrow', system-ui, sans-serif;
 	--font-serif: 'Source Serif 4', Georgia, serif;
 
 	--container: 1040px;
@@ -53,12 +54,12 @@ a {
 	padding: 0 var(--gutter);
 }
 
-/* Space Grotesk labels: section labels, dates, meta lines. */
+/* Big Shoulders labels: section labels, dates, meta lines, badges. All caps, tracked. */
 .label {
 	font-family: var(--font-sans);
-	font-size: 13px;
+	font-size: 15px;
 	font-weight: 700;
-	letter-spacing: 0.08em;
+	letter-spacing: 0.12em;
 	text-transform: uppercase;
 	color: var(--meta);
 	margin: 0 0 20px;
@@ -66,8 +67,10 @@ a {
 
 .meta {
 	font-family: var(--font-sans);
-	font-size: 14px;
-	font-weight: 500;
+	font-size: 15px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
 	color: var(--meta);
 }
 
@@ -76,8 +79,10 @@ a {
 	padding: 2px 8px;
 	border-radius: 4px;
 	font-family: var(--font-sans);
-	font-size: 13px;
-	font-weight: 500;
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
 	line-height: 1.5;
 }
 .badge-grey {

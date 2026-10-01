@@ -114,6 +114,15 @@ test('the archive draws each run of empty years from the data', async ({ page })
     const later = posts.filter((p) => p.date.getFullYear() > run.to).sort((a, b) => +a.date - +b.date);
     const after = later.find((p) => p.vault) ?? later[0];
     await expect(blocks.nth(i).locator('a')).toHaveAttribute('href', `/blog/${after.id}/`);
+    await expect(blocks.nth(i).locator('a')).toHaveText(`${after.title} →`);
+    // The quiet the vault breaks carries the copy; its opening word counts the run.
+    const n = run.to - run.from + 1;
+    const words = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'];
+    if (after.vault) {
+      await expect(blocks.nth(i).locator('.quiet')).toHaveText(
+        `${words[n] ?? n} ${n === 1 ? 'year' : 'years'} with nothing published here. Not nothing built - a 3D-printer company, a decade of robotics, a game studio, a writing system, and a protocol. Just nothing said.`,
+      );
+    } else await expect(blocks.nth(i).locator('.quiet')).toHaveCount(0);
   }
   // One block per year with posts, newest first; the current year's pill is filled ink.
   const years = counts.filter((c) => c.count > 0).map((c) => c.year).reverse();
@@ -157,9 +166,49 @@ test('posts: meta line, one badge, standfirst, indigo quote rule, prev/next', as
 test('home: the two newest posts as cards, under the headline', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('.eyebrow')).toHaveText('Founder, Of Tomorrow · building in public');
+  await expect(page.locator('.hero .lede')).toHaveText(
+    "Real dates, real work, including the parts that didn't work. Posts out of the vault, and what's being built now.",
+  );
   const newest = [...posts].sort((a, b) => +b.date - +a.date).slice(0, 2);
   await expect(page.locator('.card h3')).toHaveText(newest.map((p) => p.title));
   await expect(page.locator('.card .read').first()).toHaveText('Read it →');
+});
+
+test('the label face is Big Shoulders Display, shared with oftomorrow.net; reading stays Source Serif', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const fonts = await page.locator('link[rel="stylesheet"][href*="fonts.googleapis.com"]').getAttribute('href');
+  expect(fonts).toContain('family=Big+Shoulders+Display:wght@700;900');
+  expect(fonts).toContain('display=swap');
+  expect(fonts).not.toContain('Space+Grotesk');
+  await page.evaluate(() => document.fonts.ready);
+  expect(await page.evaluate(() => document.fonts.check('900 40px "Big Shoulders Display"'))).toBe(true);
+  const style = (sel: string) =>
+    page.locator(sel).first().evaluate((el) => {
+      const s = getComputedStyle(el);
+      return {
+        family: s.fontFamily,
+        weight: s.fontWeight,
+        size: s.fontSize,
+        lineHeight: s.lineHeight,
+        transform: s.textTransform,
+        tracking: parseFloat(s.letterSpacing) / parseFloat(s.fontSize),
+      };
+    });
+  const mark = await style('.wordmark');
+  expect(mark).toMatchObject({ weight: '900', size: '40px', lineHeight: '36px', transform: 'uppercase' });
+  expect(mark.family).toMatch(/^"?Big Shoulders Display/);
+  for (const sel of ['header nav a', '.eyebrow', '.label', '.card .meta', '.badge', '.card .read', '.site-footer']) {
+    const s = await style(sel);
+    expect(s.family, sel).toMatch(/^"?Big Shoulders Display/);
+    expect([s.weight, s.transform], sel).toEqual(['700', 'uppercase']);
+    expect(s.tracking, sel).toBeGreaterThanOrEqual(0.08 - 1e-3);
+    expect(s.tracking, sel).toBeLessThanOrEqual(0.14 + 1e-3);
+  }
+  for (const sel of ['main h1', '.card h3', '.hero .lede']) {
+    expect(await style(sel).then((s) => s.family), sel).toMatch(/^"?Source Serif 4/);
+  }
 });
 
 // WCAG relative luminance contrast between two rgb() strings.
@@ -191,7 +240,12 @@ async function textColors(page: Page, selector: string) {
 test('meta grey and labels hold 4.5:1 on every ground', async ({ page }) => {
   for (const path of PAGES) {
     await page.goto(path);
-    for (const c of await textColors(page, '.meta, .label, .badge, .site-footer p')) {
+    // Every label-face element (the condensed face makes thin strokes; the colors must carry it). The
+    // ember "now" year label is the brief's one exception and is reported, not asserted.
+    for (const c of await textColors(
+      page,
+      '.meta, .label, .eyebrow, .badge, .site-footer p, .site-footer a, header nav a, .read, .pills a, .gap, .after, .strip li:not(.now) .year',
+    )) {
       expect(contrast(c.fg, c.bg), `${path} "${c.text}" ${c.fg} on ${c.bg}`).toBeGreaterThanOrEqual(4.5);
     }
   }
