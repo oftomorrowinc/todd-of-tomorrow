@@ -110,3 +110,15 @@ test('RSS is well-formed RSS 2.0 with one item per post', async ({ page, request
     expect(Number.isNaN(Date.parse(item!.pubDate!))).toBe(false);
   }
 });
+
+// Feed order is the order some readers show, so it is newest first like every list on the site.
+test('RSS items are newest first', async ({ request }) => {
+  const xml = await (await request.get('/rss.xml')).text();
+  const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].map(([, body]) => ({
+    link: body.match(/<link>(.*?)<\/link>/)![1],
+    date: Date.parse(body.match(/<pubDate>(.*?)<\/pubDate>/)![1]),
+  }));
+  expect(items).toHaveLength(213);
+  items.slice(1).forEach((item, i) => expect(item.date, item.link).toBeLessThanOrEqual(items[i].date));
+  expect(items[0].link).toBe(`${SITE}/blog/${posts[0].id}/`);
+});

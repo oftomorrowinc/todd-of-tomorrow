@@ -1,9 +1,10 @@
-import { getCollection } from 'astro:content';
 import rss from '@astrojs/rss';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getPosts } from '../lib/posts';
 
 export async function GET(context) {
-	const posts = await getCollection('blog');
+	// Newest first: readers that keep feed order would otherwise open on the oldest archive file.
+	const posts = await getPosts();
 	return rss({
 		title: SITE_TITLE,
 		description: SITE_DESCRIPTION,
