@@ -1,7 +1,7 @@
 ---
 title: 'The rule I wrote and then broke'
 description: 'From the vault: in January 2023 I wrote down eight rules for the year. Number five was "a project isn''t done until it is shared with the world." Then I started 118 repositories and shipped almost none of them.'
-pubDate: 'Sep 30 2026'
+pubDate: 'Oct 8 2026'
 vault: true
 ---
 
@@ -45,7 +45,7 @@ quietly compounding, and now I emerge with the goods. The self-flagellating
 one is that I lost my nerve. What actually happened is simpler. I wanted
 this for years. I wrote it down twice. I was also exactly where I wanted
 to be – at home, while my kids grew up – and I wasn't leaving early. Both
-were true, and one of them had an end date. I said last week what that
+were true, and one of them had an end date. I said two weeks ago what that
 date was.
 
 The evidence is unusually complete, because I keep everything. I can tell
