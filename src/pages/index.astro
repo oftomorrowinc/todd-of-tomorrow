@@ -1,5 +1,6 @@
 ---
 import AboutText from '../components/AboutText.astro';
+import LogSidebar from '../components/LogSidebar.astro';
 import PostCard from '../components/PostCard.astro';
 import YearStrip from '../components/YearStrip.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
@@ -54,6 +55,7 @@ const sentence = gapSentence(counts);
 				<li><a href="https://oftomorrow.net">oftomorrow.net</a></li>
 				<li><a href="https://github.com/oftomorrowinc">github.com/oftomorrowinc</a></li>
 			</ul>
+			<LogSidebar />
 		</div>
 	</section>
 </Base>

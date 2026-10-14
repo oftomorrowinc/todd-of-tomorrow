@@ -1,0 +1,117 @@
+---
+// The sidebar's build log: the live line when something is claimed, then
+// Todd's newest ten from signals' public feed, and the way to the whole log
+// on oftomorrow.net. Built from the feed, then refreshed by the browser.
+import { entryHtml, feedUrl, LOG_COUNT, LOG_PAGE, LOG_PERSON, readLog } from '../lib/log';
+
+const entries = await readLog();
+---
+
+<section class="build-log" aria-labelledby="build-log" data-testid="log-sidebar">
+	<h2 class="label" id="build-log">The build log</h2>
+	<div
+		data-log-sidebar
+		data-feed={feedUrl()}
+		data-person={LOG_PERSON}
+		data-count={LOG_COUNT}
+		data-since={entries[0]?.seq ?? 0}
+	>
+		<div data-live hidden></div>
+		{entries.length === 0 && <p class="log-empty" data-empty>The log is loading.</p>}
+		<ol class="log-entries" data-entries>
+			{
+				entries.map((e) => (
+					<li class="log-entry" data-testid="log-entry" data-seq={e.seq} set:html={entryHtml(e)} />
+				))
+			}
+		</ol>
+	</div>
+	<a href={LOG_PAGE} class="log-all" data-testid="log-all">The whole log →</a>
+</section>
+
+<script>
+	import { startSidebar } from '../lib/log-client';
+	document.querySelectorAll<HTMLElement>('[data-log-sidebar]').forEach(startSidebar);
+</script>
+
+<style>
+	.build-log {
+		margin-top: 48px;
+	}
+	.log-entries {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.build-log :global(.log-entry) {
+		margin: 0 0 14px;
+		padding-top: 12px;
+		border-top: 1px solid var(--rule);
+	}
+	.build-log :global(.log-line),
+	.log-empty {
+		margin: 0;
+		font-size: 16px;
+		line-height: 1.5;
+	}
+	.log-empty {
+		color: var(--body-muted);
+	}
+	.build-log :global(.log-bracket),
+	.build-log :global(.log-time),
+	.build-log :global(.log-live),
+	.log-all {
+		font-family: var(--font-sans);
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+	.build-log :global(.log-bracket) {
+		color: var(--indigo);
+	}
+	.build-log :global(.log-time) {
+		font-size: 13px;
+		color: var(--meta);
+		white-space: nowrap;
+	}
+	.build-log :global(.log-entry a) {
+		color: var(--ink);
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+	}
+	.build-log :global(.log-entry a:hover),
+	.build-log :global(.log-live a:hover) {
+		color: var(--indigo);
+	}
+	.build-log :global(code) {
+		font-size: 0.85em;
+		background: var(--section-ground);
+		padding: 0 0.2em;
+	}
+	.build-log :global(.log-live) {
+		margin: 0 0 14px;
+		font-size: 16px;
+		color: var(--ink);
+	}
+	/* Ember is "now" — the dot carries it; the words stay ink for contrast. */
+	.build-log :global(.log-live a) {
+		color: var(--ink);
+	}
+	.build-log :global(.log-live-dot) {
+		display: inline-block;
+		width: 0.6em;
+		height: 0.6em;
+		margin-right: 0.5em;
+		border-radius: 50%;
+		background: var(--ember);
+	}
+	.log-all {
+		display: inline-block;
+		margin-top: 4px;
+		font-size: 15px;
+		text-decoration: none;
+	}
+	.log-all:hover {
+		text-decoration: underline;
+	}
+</style>

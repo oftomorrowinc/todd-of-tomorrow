@@ -1,0 +1,261 @@
+{
+ "_about": "A fixture for GET /api/log (signals job #944) for the sidebar's build log, served by log-feed.mjs while the tests build: 13 of todd's entries (one carrying markup) and one of kevin's, so ?person=todd&limit=10 is todd's newest ten. Kevin's stream is off: 404.",
+ "served": [
+  "todd",
+  "ccb",
+  "ccs",
+  "ccp"
+ ],
+ "scopes": [
+  "ot",
+  "ot.byollm",
+  "ot.press",
+  "ot.signals"
+ ],
+ "live": [
+  {
+   "by": "ccs",
+   "id": "915",
+   "title": "The <i>board</i> moves",
+   "scope": "ot.signals",
+   "line": "ccs is on #915 for 37m <script>alert(3)</script>"
+  }
+ ],
+ "entries": [
+  {
+   "seq": 213,
+   "at": "2026-10-14T15:40:00.000Z",
+   "kind": "job.done",
+   "scope": "ot.byollm",
+   "project": "Byollm",
+   "people": [
+    "ccb",
+    "todd"
+   ],
+   "by": "ccb, for todd",
+   "title": "The sidebar's <b>build log</b> <script>alert(1)</script>",
+   "body": "Verified: `npm test` passed; <img src=x onerror=alert(2)> stays text.",
+   "link": "https://signals.oftomorrow.net/board?scope=ot.byollm&card=960",
+   "id": "960",
+   "worked": "22m"
+  },
+  {
+   "seq": 212,
+   "at": "2026-10-14T15:20:00.000Z",
+   "kind": "decision.logged",
+   "scope": "ot.byollm",
+   "project": "Byollm",
+   "people": [
+    "ccb",
+    "todd"
+   ],
+   "by": "ccb, for todd",
+   "title": "the sidebar is the home page's right column",
+   "body": "",
+   "link": "https://signals.oftomorrow.net/board?scope=ot.byollm&card=960",
+   "id": "960"
+  },
+  {
+   "seq": 211,
+   "at": "2026-10-14T14:10:00.000Z",
+   "kind": "job.landed",
+   "scope": "ot.signals",
+   "project": "Signals",
+   "people": [
+    "ccs",
+    "todd"
+   ],
+   "by": "ccs, for todd",
+   "title": "The build log is served from the ledger",
+   "body": "",
+   "link": "https://signals.oftomorrow.net/board?scope=ot.signals&card=944",
+   "id": "944",
+   "commit": "358ac1c",
+   "repo": "signals"
+  },
+  {
+   "seq": 210,
+   "at": "2026-10-14T13:00:00.000Z",
+   "kind": "message",
+   "scope": "ot.press",
+   "project": "Press",
+   "people": [
+    "todd"
+   ],
+   "by": "todd",
+   "title": null,
+   "body": "Post 1 goes out on the 8th.",
+   "link": null,
+   "id": null
+  },
+  {
+   "seq": 209,
+   "at": "2026-10-13T20:00:00.000Z",
+   "kind": "job.done",
+   "scope": "ot.press",
+   "project": "Press",
+   "people": [
+    "ccp",
+    "todd"
+   ],
+   "by": "ccp, for todd",
+   "title": "Press chapter 9 typeset",
+   "body": "",
+   "link": "https://signals.oftomorrow.net/board?scope=ot.press&card=809",
+   "id": "809",
+   "worked": "3m"
+  },
+  {
+   "seq": 208,
+   "at": "2026-10-13T19:00:00.000Z",
+   "kind": "job.done",
+   "scope": "ot.press",
+   "project": "Press",
+   "people": [
+    "ccp",
+    "todd"
+   ],
+   "by": "ccp, for todd",
+   "title": "Press chapter 8 typeset",
+   "body": "",
+   "link": "https://signals.oftomorrow.net/board?scope=ot.press&card=808",
+   "id": "808",
+   "worked": "4m"
+  },
+  {
+   "seq": 207,
+   "at": "2026-10-13T18:00:00.000Z",
+   "kind": "job.done",
+   "scope": "ot.press",
+   "project": "Press",
+   "people": [
+    "ccp",
+    "todd"
+   ],
+   "by": "ccp, for todd",
+   "title": "Press chapter 7 typeset",
+   "body": "",
+   "link": "https://signals.oftomorrow.net/board?scope=ot.press&card=807",
+   "id": "807",
+   "worked": "5m"
+  },
+  {
+   "seq": 206,
+   "at": "2026-10-13T17:00:00.000Z",
+   "kind": "job.done",
+   "scope": "ot.press",
+   "project": "Press",
+   "people": [
+    "ccp",
+    "todd"
+   ],
+   "by": "ccp, for todd",
+   "title": "Press chapter 6 typeset",
+   "body": "",
+   "link": "https://signals.oftomorrow.net/board?scope=ot.press&card=806",
+   "id": "806",
+   "worked": "6m"
+  },
+  {
+   "seq": 205,
+   "at": "2026-10-13T16:00:00.000Z",
+   "kind": "job.done",
+   "scope": "ot.press",
+   "project": "Press",
+   "people": [
+    "ccp",
+    "todd"
+   ],
+   "by": "ccp, for todd",
+   "title": "Press chapter 5 typeset",
+   "body": "",
+   "link": "https://signals.oftomorrow.net/board?scope=ot.press&card=805",
+   "id": "805",
+   "worked": "7m"
+  },
+  {
+   "seq": 204,
+   "at": "2026-10-13T15:00:00.000Z",
+   "kind": "job.done",
+   "scope": "ot.press",
+   "project": "Press",
+   "people": [
+    "ccp",
+    "todd"
+   ],
+   "by": "ccp, for todd",
+   "title": "Press chapter 4 typeset",
+   "body": "",
+   "link": "https://signals.oftomorrow.net/board?scope=ot.press&card=804",
+   "id": "804",
+   "worked": "8m"
+  },
+  {
+   "seq": 203,
+   "at": "2026-10-13T14:00:00.000Z",
+   "kind": "job.done",
+   "scope": "ot.press",
+   "project": "Press",
+   "people": [
+    "ccp",
+    "todd"
+   ],
+   "by": "ccp, for todd",
+   "title": "Press chapter 3 typeset",
+   "body": "",
+   "link": "https://signals.oftomorrow.net/board?scope=ot.press&card=803",
+   "id": "803",
+   "worked": "9m"
+  },
+  {
+   "seq": 202,
+   "at": "2026-10-13T13:00:00.000Z",
+   "kind": "job.done",
+   "scope": "ot.press",
+   "project": "Press",
+   "people": [
+    "ccp",
+    "todd"
+   ],
+   "by": "ccp, for todd",
+   "title": "Press chapter 2 typeset",
+   "body": "",
+   "link": "https://signals.oftomorrow.net/board?scope=ot.press&card=802",
+   "id": "802",
+   "worked": "10m"
+  },
+  {
+   "seq": 201,
+   "at": "2026-10-13T12:00:00.000Z",
+   "kind": "job.done",
+   "scope": "ot.press",
+   "project": "Press",
+   "people": [
+    "ccp",
+    "todd"
+   ],
+   "by": "ccp, for todd",
+   "title": "Press chapter 1 typeset",
+   "body": "",
+   "link": "https://signals.oftomorrow.net/board?scope=ot.press&card=801",
+   "id": "801",
+   "worked": "11m"
+  },
+  {
+   "seq": 214,
+   "at": "2026-10-14T16:00:00.000Z",
+   "kind": "job.done",
+   "scope": "ot.byollm",
+   "project": "Byollm",
+   "people": [
+    "ccb",
+    "kevin"
+   ],
+   "by": "ccb, for kevin",
+   "title": "Kevin's card, not Todd's",
+   "body": "",
+   "link": "https://signals.oftomorrow.net/board?scope=ot.byollm&card=961",
+   "id": "961"
+  }
+ ]
+}
