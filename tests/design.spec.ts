@@ -133,7 +133,13 @@ test('the archive draws each run of empty years from the data', async ({ page })
 
 test('posts: meta line, one badge, standfirst, indigo quote rule, prev/next', async ({ page }) => {
   await page.goto('/blog/the-rule-i-wrote-and-then-broke/');
-  await expect(page.locator('.post > .meta')).toHaveText(/^\s*Sep 30, 2026\s+·\s+From the vault\s+·\s+\d+ min read\s*$/);
+  // The date is the post's own frontmatter, formatted as FormattedDate.astro does.
+  const shown = posts
+    .find((p) => p.id === 'the-rule-i-wrote-and-then-broke')!
+    .date.toLocaleDateString('en-us', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
+  await expect(page.locator('.post > .meta')).toHaveText(
+    new RegExp(`^\\s*${shown}\\s+·\\s+From the vault\\s+·\\s+\\d+ min read\\s*$`),
+  );
   await expect(page.locator('.post .badge')).toHaveCount(1);
   const standfirst = page.locator('.prose > p').first();
   await expect(standfirst).toHaveText('From the vault. Written now, about 2023.');
